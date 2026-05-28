@@ -1,135 +1,40 @@
-# Turborepo starter
+# CanvasCraft — Real-Time Collaborative Canvas Platform
 
-This Turborepo starter is maintained by the Turborepo core team.
+CanvasCraft is a modern real-time collaborative canvas application built to enable seamless teamwork, live drawing, and interactive visual collaboration over the web. Inspired by tools like Excalidraw and collaborative whiteboard platforms, CanvasCraft allows multiple users to connect and work together simultaneously on a shared canvas with low latency and synchronized updates.
 
-## Using this example
+The project is designed with scalability, real-time communication, and modern full-stack architecture in mind. It combines the power of Next.js for the frontend experience, Express and WebSockets for real-time bidirectional communication, and Prisma ORM for efficient database management and persistence.
 
-Run the following command:
+At its core, CanvasCraft focuses on delivering a smooth collaborative experience where users can draw, interact, and see changes reflected instantly across all connected clients. The application handles real-time synchronization using WebSockets, enabling fast event-based communication between users without constant HTTP polling. This architecture ensures minimal delay and creates a fluid collaborative environment.
 
-```sh
-npx create-turbo@latest
-```
+The frontend is built using Next.js, providing a highly optimized React-based user interface with server-side rendering capabilities, efficient routing, and modern component-driven development. The UI is designed to be responsive, interactive, and scalable for future enhancements such as rooms, authentication, drawing tools, and multiplayer sessions.
 
-## What's inside?
+For backend services, Express.js acts as the core server responsible for managing WebSocket connections, user sessions, and collaborative events. The WebSocket layer enables live canvas synchronization by broadcasting drawing actions and updates to all connected participants in real time.
 
-This Turborepo includes the following packages/apps:
+Prisma ORM is used for database interaction and schema management, making data handling clean, type-safe, and maintainable. It simplifies database queries and enables efficient storage of users, rooms, canvas states, and collaborative session data. Prisma also improves developer productivity by providing a modern developer experience and strong TypeScript integration.
 
-### Apps and Packages
+CanvasCraft demonstrates several important software engineering concepts including:
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+* Real-time communication using WebSockets
+* Collaborative system architecture
+* Event-driven backend design
+* State synchronization across multiple clients
+* Scalable full-stack application development
+* Database modeling with Prisma ORM
+* Modern frontend architecture using Next.js
+* API and server integration with Express.js
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+The project was developed not only as a collaborative drawing platform but also as a practical exploration of distributed real-time systems and modern web technologies. It reflects an understanding of frontend engineering, backend architecture, networking concepts, and full-stack development practices.
 
-### Utilities
+CanvasCraft can be further extended with advanced features such as:
 
-This Turborepo has some additional tools already setup for you:
+* Multiplayer rooms and invite systems
+* User authentication and authorization
+* Persistent canvas saving and version history
+* Shape tools and advanced drawing utilities
+* Real-time cursor tracking
+* Collaborative text editing
+* Canvas export and sharing
+* Role-based permissions
+* Operational Transformations (OT) or CRDTs for advanced synchronization
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Overall, CanvasCraft represents a scalable and production-oriented collaborative web application that showcases modern full-stack development, real-time communication systems, and interactive user experience engineering.
