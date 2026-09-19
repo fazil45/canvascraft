@@ -1,8 +1,12 @@
 import axios from "axios";
 
 export async function getExistingShapes(roomId: number) {
+  console.log(roomId);
   const res = await axios.get(
     `${process.env.NEXT_PUBLIC_HTTP_BACKEND_URL}/chats/${roomId}`,
+    {
+      withCredentials: true,
+    },
   );
   const messages = res.data.messages;
 
@@ -12,5 +16,3 @@ export async function getExistingShapes(roomId: number) {
   });
   return shapes;
 }
-
-

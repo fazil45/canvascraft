@@ -62,6 +62,9 @@ importers:
       react-loader-spinner:
         specifier: ^8.0.2
         version: 8.0.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      sonnar:
+        specifier: ^1.0.0
+        version: 1.0.0
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
@@ -2938,6 +2941,9 @@ packages:
 
   solid-js@1.9.11:
     resolution: {integrity: sha512-WEJtcc5mkh/BnHA6Yrg4whlF8g6QwpmXXRg4P2ztPmcKeHHlH4+djYecBLhSpecZY2RRECXYUwIc/C2r3yzQ4Q==}
+
+  sonnar@1.0.0:
+    resolution: {integrity: sha512-pv2qlVkbmy2tfA0e2m9SrUdW/B6t+Nb6XR/f4WJq7TC+cLu1mhmv/qhMeZnePIJWMpB7cl0WTRAxQTlUJm+kmg==}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -6073,6 +6079,8 @@ snapshots:
       csstype: 3.2.3
       seroval: 1.5.0
       seroval-plugins: 1.5.0(seroval@1.5.0)
+
+  sonnar@1.0.0: {}
 
   source-map-js@1.2.1: {}
 

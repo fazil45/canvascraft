@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/controllers/auth.controller.ts","./src/controllers/room.controller.ts","./src/middlewares/authmiddleware.ts","./src/routes/auth.routes.ts","./src/routes/room.route.ts"],"version":"5.9.2"}
+{"root":["./src/index.ts","./src/controllers/auth.controller.ts","./src/controllers/health.controller.ts","./src/controllers/room.controller.ts","./src/middlewares/authmiddleware.ts","./src/routes/auth.routes.ts","./src/routes/health.route.ts","./src/routes/room.route.ts"],"version":"5.9.2"}
