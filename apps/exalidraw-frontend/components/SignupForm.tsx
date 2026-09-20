@@ -110,9 +110,9 @@ export function FormSignup() {
             </Button>
           </div>
           <div className="flex items-center justify-center text-neutral-800 xl:mt-2 dark:text-neutral-500">
-            Already have an account
+            Already have an account?
             <span onClick={() => route.push("/signin")}>
-              <a className="cursor-pointer text-cyan-400"> signin</a>
+              <a className="cursor-pointer text-cyan-400 ml-1 font-mono"> signin</a>
             </span>
           </div>
         </form>

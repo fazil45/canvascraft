@@ -17,12 +17,12 @@ const Hero = () => {
           Sketch ideas together,
           <br />
           <span className="bg-linear-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">
-            on one infinite canvas.
+            on one canvas.
           </span>
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-lg text-slate-600 dark:text-slate-400">
           Create shared whiteboards, draw shapes, sketch ideas, and watch your
-          teammates' cursors move in real time. No account needed.
+          teammates' cursors move in real time.
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link

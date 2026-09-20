@@ -15,7 +15,7 @@ const Footer = () => {
                 Sketchboard
               </div>
               <p className="text-xs text-slate-400 dark:text-slate-500">
-                Built with realtime Supabase
+                Built with Love
               </p>
             </div>
           </footer>
