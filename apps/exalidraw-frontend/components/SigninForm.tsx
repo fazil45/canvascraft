@@ -7,9 +7,11 @@ import { Button } from "./ButtonComponent";
 import { SigninSchema } from "@repo/common/types";
 import axios from "axios";
 import FieldInfo from "./ErrorMessage";
+import { AuthStore } from "@/store/AuthStore";
 
 export function FormSignin() {
   const route = useRouter();
+  const { signin } = AuthStore();
   const form = useForm({
     defaultValues: {
       email: "",
@@ -19,31 +21,18 @@ export function FormSignin() {
       onChange: SigninSchema,
     },
     onSubmit: async ({ value }) => {
-      try {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_HTTP_BACKEND_URL}/signin`,
-          {
-            email: value.email,
-            password: value.password,
-          },
-        );
-        const token = response.data.token;
-        const userId = response.data.id
-        localStorage.setItem("token", token);
-        console.log("success");
-        route.push("/");
-      } catch (error) {}
+      signin(value.email, value.password, route);
     },
   });
 
   return (
-    <div className="w-screen h-screen flex flex-col justify-center items-center bg-linear-to-br from-cyan-500/10 via-transparent to-cyan-500/10">
+    <div className="flex h-screen w-screen flex-col items-center justify-center bg-linear-to-br from-cyan-500/10 via-transparent to-cyan-500/10">
       <div className="absolute top-5 right-5">
         <ThemeToggle />
       </div>
-      <div className="xl:p-4 xl:m-2 dark:bg-black xs:w-[86vw] xs:h-[110vw] md:w-[60vw] md:h-[80vw] xl:w-[30vw] xl:h-[36vw] rounded-lg text-white border  dark:border-cyan-400/40 border-neutral-700/50 shadow-lg dark:shadow-cyan-400/20 shadow-neutral-400  flex flex-col items-center justify-center xl:gap-4 backdrop-blur-xl shadow-blur-multi">
+      <div className="xs:w-[86vw] xs:h-[110vw] shadow-blur-multi flex flex-col items-center justify-center rounded-lg border border-neutral-700/50 text-white shadow-lg shadow-neutral-400 backdrop-blur-xl md:h-[80vw] md:w-[60vw] xl:m-2 xl:h-[36vw] xl:w-[30vw] xl:gap-4 xl:p-4 dark:border-cyan-400/40 dark:bg-black dark:shadow-cyan-400/20">
         <div
-          className="text-4xl font-bold text-cyan-400 xs:-mt-12 xl:mt-4 cursor-pointer"
+          className="xs:-mt-12 cursor-pointer text-4xl font-bold text-cyan-400 xl:mt-4"
           onClick={() => route.push("/")}
         >
           CanvasCraft
@@ -93,15 +82,15 @@ export function FormSignin() {
               </div>
             )}
           />
-          <div className="flex items-center justify-center m-4">
+          <div className="m-4 flex items-center justify-center">
             <Button variant="secondary" size="lg" type="submit">
               Signin
             </Button>
           </div>
-          <div className="dark:text-neutral-500 text-neutral-800 xl:mt-2 flex items-center justify-center ">
+          <div className="flex items-center justify-center text-neutral-800 xl:mt-2 dark:text-neutral-500">
             Create new account
             <span onClick={() => route.push("/signup")}>
-              <a className="text-cyan-400 cursor-pointer">signup</a>
+              <a className="cursor-pointer text-cyan-400">signup</a>
             </span>
           </div>
         </form>

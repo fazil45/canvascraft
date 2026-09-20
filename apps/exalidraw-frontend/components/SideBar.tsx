@@ -27,7 +27,7 @@ export function Side({ className, onClick }: SideBar) {
           </div>
           <div
             className="xs:gap-14 absolute bottom-10 mt-24 flex w-fit cursor-pointer items-center justify-center rounded border-2 border-cyan-600/70 p-1 sm:gap-16 md:gap-20 xl:gap-36"
-            onClick={() => route.push("/rooms")}
+            onClick={() => route.push("/dashboard")}
           >
             <div className="text-lg">Exit</div>
             <div>

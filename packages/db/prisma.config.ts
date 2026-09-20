@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({
   path: path.resolve(__dirname, "../../.env"),
 });
-console.log(process.env.DATABASE_URL)
+
 import { defineConfig } from 'prisma/config';
 
 export default defineConfig({

@@ -4,11 +4,13 @@ import { prisma } from "@repo/db/client";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+
 export const signup = async (req: Request, res: Response) => {
   try {
     const parseData = CreateUserSchema.safeParse(req.body);
     if (!parseData.success) {
       return res.status(400).json({
+        success: false,
         error: "Incorrect inputs",
       });
     }
@@ -24,6 +26,7 @@ export const signup = async (req: Request, res: Response) => {
 
     if (userAlreadyExists) {
       return res.status(409).json({
+        success: false,
         error: `User with email:- ${email} already exists`,
       });
     }
@@ -39,10 +42,15 @@ export const signup = async (req: Request, res: Response) => {
     });
 
     res.status(201).json({
+      success: true,
       message: "SignUp successfully",
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to sign up",
+    });
   }
 };
 
@@ -51,7 +59,8 @@ export const signin = async (req: Request, res: Response) => {
     const siginData = SigninSchema.safeParse(req.body);
 
     if (!siginData.success) {
-      return res.status(402).json({
+      return res.status(400).json({
+        success: false,
         error: "Incorrect input",
       });
     }
@@ -67,12 +76,14 @@ export const signin = async (req: Request, res: Response) => {
 
     if (!checkUser) {
       return res.status(404).json({
+        success: false,
         error: `User with email:- ${email} does not exists`,
       });
     }
 
     if (!checkUser || !checkUser.password) {
       return res.status(404).json({
+        success: false,
         error: "user not exist",
       });
     }
@@ -86,15 +97,21 @@ export const signin = async (req: Request, res: Response) => {
         },
         SECRET_TOKEN,
       );
-      return res.status(201).json({
+      return res.status(200).json({
+        success: true,
         token,
       });
     } else {
-      res.status(403).json({
+      return res.status(401).json({
+        success: false,
         msg: "incorrect credential",
       });
     }
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to sign in",
+    });
   }
 };

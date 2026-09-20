@@ -1,6 +1,6 @@
 import { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
-import { prisma } from "@repo/db";
+import { prisma } from "@repo/db/client";
 import { SECRET_TOKEN } from "@repo/backendcommon/secret";
 import { WebSocket } from "ws";
 
@@ -14,6 +14,11 @@ interface User {
 
 const users: User[] = [];
 
+const u = new URL(process.env.DATABASE_URL ?? "postgres://missing");
+console.log("adapter target:", u.hostname, u.port, "cwd:", process.cwd());
+
+   console.log("DB URL set:", !!process.env.DATABASE_URL);
+
 function checkUser(token: string): string | null {
   try {
     const decoded = jwt.verify(token, SECRET_TOKEN);
@@ -25,6 +30,7 @@ function checkUser(token: string): string | null {
     if (!decoded || !decoded.userId) {
       return null;
     }
+    console.log("User ID in checkUser funtion :-" + decoded.userId);
     return decoded.userId;
   } catch (error) {
     return null;
@@ -32,20 +38,28 @@ function checkUser(token: string): string | null {
 }
 
 async function findUserName(userId: string) {
-  if (!userId) {
+  try {
+    if (!userId) {
     return;
   }
 
-  const user = await prisma.user.findUnique({
+  console.log("Userid in username function :- " + userId);
+
+  const user = await prisma.user.findFirst({
     where: {
       id: userId,
     },
   });
 
+  console.log("User :- " + user);
+
   if (user) {
     return user.name;
   } else {
     return null;
+  }
+  } catch (error) {
+    console.log(error)
   }
 }
 

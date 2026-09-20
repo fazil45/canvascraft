@@ -4,16 +4,18 @@ import { SECRET_TOKEN } from "@repo/backendcommon/secret";
 
 export function middleware(req: Request, res: Response, next: NextFunction) {
   try {
-    const tokenHeader = req.headers["authorization"]
+    const tokenHeader = req.headers["authorization"];
 
     if (!tokenHeader) {
       return res.status(401).json({
-        error:'No authorization token  provided'
-      });    
+        success: false,
+        error: "No authorization token  provided",
+      });
     }
 
     if (!tokenHeader.startsWith("Bearer")) {
-      return res.status(201).json({
+      return res.status(401).json({
+        success: false,
         error: "Authorization header must begin with Bearer",
       });
     }
@@ -22,7 +24,10 @@ export function middleware(req: Request, res: Response, next: NextFunction) {
 
     const decodedInformation = jwt.verify(token, SECRET_TOKEN);
     if (typeof decodedInformation === "string") {
-      return;
+      return res.status(401).json({
+        success: false,
+        error: "Invalid authorization token",
+      });
     }
 
     if (decodedInformation) {
@@ -31,10 +36,15 @@ export function middleware(req: Request, res: Response, next: NextFunction) {
       next();
     } else {
       res.status(403).json({
+        success: false,
         error: "Unauthorized",
       });
     }
   } catch (error) {
     console.log(error);
+    return res.status(401).json({
+      success: false,
+      error: "Invalid authorization token",
+    });
   }
 }
