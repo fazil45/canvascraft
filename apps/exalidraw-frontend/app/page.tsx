@@ -1,5 +1,4 @@
 import LandingPage from "@/pages/LandingPage";
-// @ts-expect-error
 import "./globals.css";
 
 export default function Home() {
