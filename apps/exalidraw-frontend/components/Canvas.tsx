@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { IconButton } from "./IconButton";
 import {
   ArrowUpLeft,
+  CaseSensitive,
   Circle,
   MousePointer,
   Pencil,
@@ -15,7 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { Game } from "@/draw/Game";
-import { Side } from "./SideBar";
+import { SideBar } from "./SideBar";
 import axios from "axios";
 
 export type ToolShape =
@@ -24,7 +25,10 @@ export type ToolShape =
   | "rect"
   | "pencil"
   | "arrowPoint"
-  | "undo";
+  | "undo"
+  | "redo"
+  | "delete"
+  | "text";
 
 export function Canvas({
   roomId,
@@ -62,28 +66,27 @@ export function Canvas({
 
   const gameRef = useRef<Game | null>(null);
 
-useEffect(() => {
-  if (!canvasRef.current) return;
-  if (gameRef.current) return;
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    if (gameRef.current) return;
 
-  const g = new Game(canvasRef.current, roomId, socket);
-  gameRef.current = g;
-  setGame(g);
+    const g = new Game(canvasRef.current, roomId, socket);
+    gameRef.current = g;
+    setGame(g);
 
-  return () => {
-    g.destroy();
-    gameRef.current = null;
-  };
-}, [roomId, socket]);
+    return () => {
+      g.destroy();
+      gameRef.current = null;
+    };
+  }, [roomId, socket]);
 
-  const keyDownExportHandler =  (e:KeyboardEvent)=>{
-    const isExport = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s"
+  const keyDownExportHandler = (e: KeyboardEvent) => {
+    const isExport = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s";
 
     if (isExport) {
-      exportCanvas()
+      exportCanvas();
     }
-  }
-
+  };
 
   return (
     <div className="h-screen overflow-hidden">
@@ -114,7 +117,7 @@ useEffect(() => {
         )}
       </div>
       <div ref={sidebarRef} className="hidden transition-all duration-500">
-        {<Side onClick={exportCanvas} className="" />}
+        {<SideBar onClick={exportCanvas} className="" />}
       </div>
     </div>
   );
@@ -137,20 +140,18 @@ function TopBar({
       if (game) {
         game.undoLastShape();
       } else {
-        return
+        return;
       }
-      
     } catch (error) {}
   };
   const redoMessage = async () => {
-    console.log("here")
+    console.log("here");
     try {
       if (game) {
         game.redoLastShape();
       } else {
-        return
+        return;
       }
-      
     } catch (error) {}
   };
 
@@ -171,13 +172,18 @@ function TopBar({
   };
 
   return (
-    <div className="fixed top-25 left-5 flex gap-2 rounded-lg border-2 border-cyan-500/60 p-2 flex-col">
+    <div className="fixed top-25 left-5 flex flex-col gap-2 rounded-lg border-2 border-cyan-500/60 p-2">
       <IconButton
         activated={isActiveTool === "mouse"}
         icon={<MousePointer />}
         onClick={() => {
           setIsActiveTool("mouse");
         }}
+      />
+      <IconButton
+        activated={isActiveTool === "text"}
+        icon={<CaseSensitive />}
+        onClick={() => setIsActiveTool("text")}
       />
       <IconButton
         activated={isActiveTool === "arrowPoint"}
@@ -213,12 +219,12 @@ function TopBar({
         onClick={undoMessage}
       />
       <IconButton
-        activated={isActiveTool === "undo"}
+        activated={isActiveTool === "redo"}
         icon={<Redo2 className="cursor-pointer" />}
         onClick={redoMessage}
       />
       <IconButton
-        activated={isActiveTool === "undo"}
+        activated={isActiveTool === "delete"}
         icon={<Trash2 className="cursor-pointer" />}
         onClick={deleteAllMessage}
       />

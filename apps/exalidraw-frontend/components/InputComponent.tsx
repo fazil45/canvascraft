@@ -24,7 +24,7 @@ export default function Input({
   disabled
 }: Input) {
   return (
-    <div className="xl:m-2 xs:m-3 md:m-3">
+    <div className="xl:m-2   xs:m-3 md:m-3">
       <label className="dark:text-neutral-300 text-neutral-800">{title}</label>
       <input
         onChange={(e)=>onChange!(e.target.value)}

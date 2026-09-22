@@ -10,14 +10,10 @@ interface User {
   ws: WebSocket;
   rooms: number[];
   userId: string;
+  username: string | null;
 }
 
 const users: User[] = [];
-
-const u = new URL(process.env.DATABASE_URL ?? "postgres://missing");
-console.log("adapter target:", u.hostname, u.port, "cwd:", process.cwd());
-
-   console.log("DB URL set:", !!process.env.DATABASE_URL);
 
 function checkUser(token: string): string | null {
   try {
@@ -40,31 +36,32 @@ function checkUser(token: string): string | null {
 async function findUserName(userId: string) {
   try {
     if (!userId) {
-    return;
-  }
+      return;
+    }
 
-  console.log("Userid in username function :- " + userId);
+    console.log("WebSocket UserId " + userId);
 
-  const user = await prisma.user.findFirst({
-    where: {
-      id: userId,
-    },
-  });
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
 
-  console.log("User :- " + user);
+    console.log(user);
 
-  if (user) {
-    return user.name;
-  } else {
-    return null;
-  }
+    if (user) {
+      return user.name;
+    } else {
+      return null;
+    }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 }
 
 wss.on("connection", function connection(ws, request) {
   const url = request.url;
+
   if (!url) {
     return;
   }
@@ -83,6 +80,7 @@ wss.on("connection", function connection(ws, request) {
     ws,
     userId,
     rooms: [],
+    username: null,
   });
 
   ws.on("message", async function message(data) {
@@ -102,7 +100,11 @@ wss.on("connection", function connection(ws, request) {
       const roomId = Number(parsedData.roomId);
       user.rooms.push(roomId);
 
-      const username = await findUserName(user.userId);
+      const name = await findUserName(user.userId);
+      console.log("lookup:", user.userId, typeof user.userId, "->", name);
+      user.username ??= name ?? null;
+
+      user.username ??= (await findUserName(user.userId)) ?? null;
 
       // Broadcasting new user-joined
       users.forEach((otherUsers) => {
@@ -112,7 +114,7 @@ wss.on("connection", function connection(ws, request) {
               type: "user-joined",
               roomId,
               userId: user.userId,
-              username,
+              username: user.username,
             }),
           );
         }
@@ -120,7 +122,9 @@ wss.on("connection", function connection(ws, request) {
 
       const roomUsers = users
         .filter((user) => user.rooms.includes(roomId) && user.ws !== ws)
-        .map((user) => ({ userId: user.userId }));
+        .map((user) => ({ userId: user.userId, username: user.username }));
+
+      console.log(roomUsers);
 
       // Telling new user who is already present in room
       ws.send(
@@ -143,8 +147,6 @@ wss.on("connection", function connection(ws, request) {
         return;
       }
 
-      const username = await findUserName(user.userId);
-
       user.rooms = user.rooms.filter((x) => x !== parsedData.room);
 
       users.forEach((otherUser) => {
@@ -154,7 +156,7 @@ wss.on("connection", function connection(ws, request) {
               type: "user-left",
               roomId,
               userId: user.userId,
-              username,
+              username: user.username,
             }),
           );
         }
@@ -239,6 +241,31 @@ wss.on("connection", function connection(ws, request) {
               type: "delete",
               roomId,
               clientId,
+            }),
+          );
+        }
+      });
+    }
+  });
+
+  ws.on("close", () => {
+    const idx = users.findIndex((x) => x.ws === ws);
+    if (idx === -1) return;
+    const [gone] = users.splice(idx, 1);
+
+    if (!gone) {
+      return;
+    }
+
+    for (const roomId of gone.rooms) {
+      users.forEach((other) => {
+        if (other.rooms.includes(roomId)) {
+          other.ws.send(
+            JSON.stringify({
+              type: "user-left",
+              roomId,
+              userId: gone.userId,
+              username: gone.username,
             }),
           );
         }

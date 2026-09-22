@@ -3,6 +3,8 @@ import axios from "axios";
 import { toast } from "sonner";
 import { create } from "zustand";
 
+export type Participant = { userId: string; username: string | null };
+
 type Room = {
   id: number;
   slug: string;
@@ -17,6 +19,13 @@ type RoomStoreState = {
   roomsCreated: Room[];
   deleteRoom: (id: number) => Promise<void>;
   createRoom: (slug: string) => Promise<void>;
+
+  // for user left and join messages
+  participants: Record<string, Participant>;
+  setParticipants: (users: Participant[]) => void;
+  addParticipant: (user: Participant) => void;
+  removeParticipant: (userId: string) => void;
+  reset: () => void;
 };
 
 export const RoomStore = create<RoomStoreState>((set) => ({
@@ -97,4 +106,18 @@ export const RoomStore = create<RoomStoreState>((set) => ({
       set({ roomCreationLoading: false });
     }
   },
+  participants: {},
+  setParticipants: (users) =>
+    set({ participants: Object.fromEntries(users.map((u) => [u.userId, u])) }),
+
+  addParticipant: (user) =>
+    set((s) => ({ participants: { ...s.participants, [user.userId]: user } })),
+
+  removeParticipant: (userId) =>
+    set((s) => {
+      const { [userId]: _removed, ...rest } = s.participants;
+      return { participants: rest };
+    }),
+    
+  reset: () => set({ participants: {} }),
 }));

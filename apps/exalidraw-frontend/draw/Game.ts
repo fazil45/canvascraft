@@ -1,5 +1,8 @@
 import { ToolShape } from "@/components/Canvas";
 import { getExistingShapes } from "./http";
+import { toast } from "sonner";
+import { RoomStore } from "@/store/RoomStore";
+import { number } from "zod";
 
 type Shape =
   | {
@@ -25,6 +28,13 @@ type Shape =
       startY: number;
       endX: number;
       endY: number;
+    }
+  | {
+      type: "text";
+      x: number;
+      y: number;
+      content: string;
+      fontSize: number;
     };
 
 interface Point {
@@ -35,6 +45,8 @@ interface Point {
 export class Game {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
+  private activeTextEl: HTMLInputElement | null;
+  private textOrigin: Point | null;
   private existingShapes: Shape[];
   private roomId: number;
   private socket: WebSocket;
@@ -51,6 +63,8 @@ export class Game {
     console.log("Game created");
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d")!;
+    this.activeTextEl = null;
+    this.textOrigin = null;
     this.existingShapes = [];
     this.roomId = roomId;
     this.socket = socket;
@@ -69,6 +83,71 @@ export class Game {
         }),
       );
     };
+  }
+
+  private startTextInput(x: number, y: number) {
+    this.commitTextInput();
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.style.position = "absolute";
+    input.style.left = `${x}px`;
+    input.style.top = `${y - 10}px`;
+    input.style.background = "transparent";
+    input.style.color = "white";
+    input.style.font = "20 sans-serif";
+    input.style.border = "1px dashed #888";
+    input.style.outline = "none";
+    input.style.zIndex = "10000";
+
+    this.canvas.parentElement!.appendChild(input);
+    input.focus();
+
+    this.activeTextEl = input;
+    this.textOrigin = { x, y };
+
+    input.addEventListener("keydown", (e) => {
+      e.stopPropagation();
+      if (e.key === "Enter") {
+        e.preventDefault();
+        this.commitTextInput();
+      } else if (e.key === "Escape") {
+        this.cancelTextInput();
+      }
+    });
+  }
+
+  private commitTextInput() {
+    if (!this.activeTextEl || !this.textOrigin) return;
+
+    const content = this.activeTextEl.value.trim();
+    const { x, y } = this.textOrigin;
+
+    this.activeTextEl.remove();
+    this.activeTextEl = null;
+    this.textOrigin = null;
+
+    if (!content) return;
+
+    const shape: Shape = { type: "text", x, y, content, fontSize: 20 };
+
+    this.existingShapes.push(shape);
+    this.clearCanvas();
+
+    this.socket.send(
+      JSON.stringify({
+        type: "chat",
+        clientId: this.clientId,
+        message: JSON.stringify({ shape }),
+        roomId: this.roomId,
+      }),
+    );
+  }
+
+  private cancelTextInput() {
+    this.activeTextEl?.remove();
+    this.activeTextEl = null;
+    this.textOrigin = null;
   }
 
   setTool(tool: ToolShape) {
@@ -142,6 +221,7 @@ export class Game {
     this.canvas.removeEventListener("mousemove", this.mouseMoveHandler);
     window.removeEventListener("keydown", this.keyDownUndoHandler);
     window.removeEventListener("keydown", this.keyDownRedoHandler);
+    RoomStore.getState().reset();
   }
 
   async init() {
@@ -151,7 +231,25 @@ export class Game {
 
   initHandlers() {
     this.socket.onmessage = (event) => {
+      const room = RoomStore.getState();
       const message = JSON.parse(event.data);
+
+      if (message.type === "room-users") {
+        room.setParticipants(message.users);
+      }
+
+      if (message.type === "user-joined") {
+        room.addParticipant({
+          userId: message.userId,
+          username: message.username,
+        });
+        toast.info(`${message.username} has joined the room`);
+      }
+
+      if (message.type === "user-left") {
+        room.removeParticipant(message.userId);
+        toast.info(`${message.username} has left`);
+      }
 
       if (message.type === "chat") {
         if (message.clientId === this.clientId) {
@@ -249,6 +347,10 @@ export class Game {
         );
         this.ctx.stroke();
         this.ctx.closePath();
+      } else if (shape.type === "text") {
+        this.ctx.fillStyle = "rgba(255,255,255)";
+        this.ctx.font = `${shape.fontSize}px sans-serif`;
+        this.ctx.fillText(shape.content, shape.x, shape.y);
       }
     });
   }
@@ -261,7 +363,7 @@ export class Game {
       this.undoLastShape();
     }
   };
-  
+
   keyDownRedoHandler = (e: KeyboardEvent) => {
     const isUndo = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y";
 
@@ -270,8 +372,12 @@ export class Game {
       this.redoLastShape();
     }
   };
-  
+
   mouseDownHandler = (e: MouseEvent) => {
+    if (this.isActiveTool === "text") {
+      this.startTextInput(e.clientX, e.clientY);
+      return;
+    }
     this.clicked = true;
 
     const x = e.clientX;
@@ -320,6 +426,7 @@ export class Game {
         endY: endY,
       };
     }
+
     if (!shape) {
       return;
     }
@@ -405,6 +512,6 @@ export class Game {
   }
   initKeyboardHandlers() {
     window.addEventListener("keydown", this.keyDownUndoHandler);
-    window.addEventListener("keydown",this.keyDownRedoHandler)
+    window.addEventListener("keydown", this.keyDownRedoHandler);
   }
 }

@@ -30,22 +30,6 @@ export default function RoomCanvas({
       );
     };
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-
-      console.log("Received:", data);
-
-      if (data.type === "room-users") {
-        console.log("Users already in room:", data.users);
-      }
-
-      if (data.type === "user-joined") {
-        console.log(
-          `${data.username} joined room ${data.roomId}`,
-        );
-      }
-    };
-
     ws.onerror = (error) => {
       console.error("WebSocket error:", error);
     };
