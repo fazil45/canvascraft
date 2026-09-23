@@ -14,25 +14,22 @@ export const createRoom = async (req: Request, res: Response) => {
     }
     //@ts-ignore
     const userId = req.userId;
-    try {
-      const room = await prisma.room.create({
-        data: {
-          slug: parseData.data.slug,
-          adminId: userId,
-        },
-      });
+    const room = await prisma.room.create({
+      data: {
+        slug: parseData.data.slug,
+        adminId: userId,
+      },
+    });
 
-      res.status(201).json({
-        success: true,
-        message:"Room created successfully",
-        roomId: room.id,
-      });
-    } catch (error) {
-      return res.status(409).json({
-        success: false,
-        error: "Slug already used",
-      });
-    }
+    res.status(201).json({
+      success: true,
+      message: "Room created successfully",
+      roomId: room.id,
+    });
+    return res.status(409).json({
+      success: false,
+      error: "Slug already used",
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -50,11 +47,14 @@ export const getRooms = async (req: Request, res: Response) => {
       where: {
         adminId: userID,
       },
+      orderBy: {
+        id: "desc",
+      },
     });
 
     return res.status(200).json({
       success: true,
-      rooms:rooms,
+      rooms: rooms,
     });
   } catch (error) {
     console.log(error);
@@ -133,6 +133,7 @@ export const fetchMessage = async (req: Request, res: Response) => {
     const messages = await prisma.chat.findMany({
       where: {
         roomId: roomId,
+        deleted: false,
       },
       orderBy: {
         id: "desc",

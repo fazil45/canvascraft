@@ -26,7 +26,6 @@ function checkUser(token: string): string | null {
     if (!decoded || !decoded.userId) {
       return null;
     }
-    console.log("User ID in checkUser funtion :-" + decoded.userId);
     return decoded.userId;
   } catch (error) {
     return null;
@@ -39,15 +38,11 @@ async function findUserName(userId: string) {
       return;
     }
 
-    console.log("WebSocket UserId " + userId);
-
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
       },
     });
-
-    console.log(user);
 
     if (user) {
       return user.name;
@@ -101,7 +96,6 @@ wss.on("connection", function connection(ws, request) {
       user.rooms.push(roomId);
 
       const name = await findUserName(user.userId);
-      console.log("lookup:", user.userId, typeof user.userId, "->", name);
       user.username ??= name ?? null;
 
       user.username ??= (await findUserName(user.userId)) ?? null;
@@ -169,33 +163,71 @@ wss.on("connection", function connection(ws, request) {
       const clientId = parsedData.clientId;
 
       try {
-        await prisma.chat.create({
-          data: {
-            roomId: Number(roomId),
-            message,
-            userId,
-          },
+        const createChat = await prisma.chat.create({
+          data: { roomId: Number(roomId), message, userId },
+        });
+
+        const parsedMessage = JSON.parse(message);
+        const tempId = parsedMessage.shape.id;
+        parsedMessage.shape.id = createChat.id;
+        const patchedMessage = JSON.stringify(parsedMessage);
+
+        users.forEach((user) => {
+          if (user.rooms.includes(roomId)) {
+            user.ws.send(
+              JSON.stringify({
+                type: "chat",
+                message: patchedMessage,
+                roomId,
+                clientId,
+                chatId: createChat.id,
+                tempId,
+              }),
+            );
+          }
         });
       } catch (error: any) {
         console.log(error.message);
       }
+    }
+
+    if (parsedData.type === "move") {
+      const roomId = Number(parsedData.roomId);
+      const clientId = parsedData.clientId;
+      const shape = parsedData.shape;
+
+      try {
+        await prisma.chat.update({
+          where: { id: shape.id },
+          data: { message: JSON.stringify(shape) },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
       users.forEach((user) => {
-        if (user.rooms.includes(roomId)) {
+        if (user.rooms.includes(roomId) && user.ws !== ws) {
           user.ws.send(
-            JSON.stringify({
-              type: "chat",
-              message: message,
-              roomId,
-              clientId,
-            }),
+            JSON.stringify({ type: "move", roomId, shape, clientId }),
           );
         }
-      });
+      }); 
     }
+
     if (parsedData.type === "undo") {
       const roomId = Number(parsedData.roomId);
       const clientId = parsedData.clientId;
       const shape = parsedData.shape;
+      const chatId = shape.id;
+
+      try {
+        await prisma.chat.update({
+          where: { id: chatId },
+          data: { deleted: true },
+        });
+      } catch (error) {
+        console.error(error);
+      }
 
       users.forEach((user) => {
         if (user.rooms.includes(roomId) && user.ws !== ws) {
@@ -203,7 +235,7 @@ wss.on("connection", function connection(ws, request) {
             JSON.stringify({
               type: "undo",
               roomId,
-              shape,
+              shape: shape,
               clientId,
             }),
           );
@@ -215,6 +247,16 @@ wss.on("connection", function connection(ws, request) {
       const roomId = Number(parsedData.roomId);
       const clientId = parsedData.clientId;
       const shape = parsedData.shape;
+      const chatId = shape.id;
+
+      try {
+        await prisma.chat.update({
+          where: { id: chatId },
+          data: { deleted: false },
+        });
+      } catch (error) {
+        console.log(error);
+      }
 
       users.forEach((user) => {
         if (user.rooms.includes(roomId) && user.ws !== ws) {
@@ -233,6 +275,12 @@ wss.on("connection", function connection(ws, request) {
     if (parsedData.type === "delete") {
       const roomId = Number(parsedData.roomId);
       const clientId = parsedData.clientId;
+
+      try {
+        await prisma.chat.deleteMany({ where: { roomId: roomId } });
+      } catch (error) {
+        console.log(error);
+      }
 
       users.forEach((user) => {
         if (user.rooms.includes(roomId) && user.ws !== ws) {

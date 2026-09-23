@@ -2,25 +2,20 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   Plus,
-  Users,
   Trash2,
   PenTool,
   KeyRound,
   ArrowRightCircle,
-  Sun,
-  Moon,
   Layers,
   ArrowLeft,
-  Search,
 } from "lucide-react";
-import NavBar from "@/components/NavBar";
+
 import { useRouter } from "next/navigation";
 import Input from "@/components/InputComponent";
 import FieldInfo from "@/components/ErrorMessage";
-import { Button } from "@/components/ButtonComponent";
 import { useForm } from "@tanstack/react-form";
 import { RoomStore } from "@/store/RoomStore";
-import z, { strictObject } from "zod";
+import z from "zod";
 import { getRoomId } from "@/lib/roomid";
 
 const RoomSchema = z.object({
@@ -69,8 +64,8 @@ export default function Dashboard() {
     },
     validators: { onChange: RoomSchema },
     onSubmit: async ({ value }) => {
-      createRoom(value.createSlug);
-      fetchRoom();
+      await createRoom(value.createSlug);
+      await fetchRoom();
       createForm.reset();
     },
   });
@@ -259,41 +254,43 @@ export default function Dashboard() {
                 <div className="col-span-2 text-right">Actions</div>
               </div>
               <div className="divide-y divide-slate-100 dark:divide-white/5">
-                {roomsCreated.map((room) => (
-                  <div
-                    key={room.id}
-                    onClick={() => enterRoom(String(room.slug))}
-                    className="group grid cursor-pointer grid-cols-12 items-center gap-4 px-5 py-3.5 transition-colors hover:bg-slate-50 dark:hover:bg-white/5"
-                  >
-                    <div className="col-span-4 hidden sm:block">
-                      <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-bold tracking-widest text-slate-600 dark:bg-white/10 dark:text-slate-300">
-                        {room.slug}
-                      </span>
+                {roomsCreated
+                  .filter((room) => room != null)
+                  .map((room) => (
+                    <div
+                      key={room.id}
+                      onClick={() => enterRoom(String(room.slug))}
+                      className="group grid cursor-pointer grid-cols-12 items-center gap-4 px-5 py-3.5 transition-colors hover:bg-slate-50 dark:hover:bg-white/5"
+                    >
+                      <div className="col-span-4 hidden sm:block">
+                        <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-bold tracking-widest text-slate-600 dark:bg-white/10 dark:text-slate-300">
+                          {room.slug}
+                        </span>
+                      </div>
+                      <div className="col-span-3 hidden text-sm text-slate-500 sm:block dark:text-slate-400">
+                        {formatDate(room.createdAt)}
+                      </div>
+                      <div className="col-span-2 flex items-center justify-end gap-8">
+                        <button
+                          onClick={() => {
+                            deleteRoom(room.id);
+                            fetchRoom();
+                          }}
+                          className="cursor-pointer rounded-md p-1.5 text-slate-400 transition-all group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            enterRoom(room.slug);
+                          }}
+                          className="cursor-pointer rounded-md p-1.5 text-slate-400 transition-all group-hover:opacity-100 hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                        >
+                          Join
+                        </button>
+                      </div>
                     </div>
-                    <div className="col-span-3 hidden text-sm text-slate-500 sm:block dark:text-slate-400">
-                      {formatDate(room.createdAt)}
-                    </div>
-                    <div className="col-span-2 flex items-center justify-end gap-8">
-                      <button
-                        onClick={() => {
-                          deleteRoom(room.id);
-                          fetchRoom();
-                        }}
-                        className="cursor-pointer rounded-md p-1.5 text-slate-400 transition-all group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10 dark:hover:text-red-400"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          enterRoom(room.slug)
-                        }}
-                        className="cursor-pointer rounded-md p-1.5 text-slate-400 transition-all group-hover:opacity-100 hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
-                      >
-                        Join  
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           )}

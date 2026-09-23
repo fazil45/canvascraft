@@ -7,6 +7,7 @@ import {
   CaseSensitive,
   Circle,
   MousePointer,
+  Palette,
   Pencil,
   RectangleHorizontal,
   Redo2,
@@ -28,7 +29,8 @@ export type ToolShape =
   | "undo"
   | "redo"
   | "delete"
-  | "text";
+  | "text"
+  | "colorPalette";
 
 export function Canvas({
   roomId,
@@ -172,7 +174,10 @@ function TopBar({
   };
 
   return (
-    <div className="fixed top-25 left-5 flex flex-col gap-2 rounded-lg border-2 border-cyan-500/60 p-2">
+    <div className="fixed top-25 left-5 flex flex-col gap-2 rounded-lg border-2 border-neutral-500/60 p-2">
+      <div className="">
+        <ColorBar game={game} />
+      </div>
       <IconButton
         activated={isActiveTool === "mouse"}
         icon={<MousePointer />}
@@ -227,6 +232,22 @@ function TopBar({
         activated={isActiveTool === "delete"}
         icon={<Trash2 className="cursor-pointer" />}
         onClick={deleteAllMessage}
+      />
+    </div>
+  );
+}
+
+function ColorBar({ game }: { game?: Game }) {
+  return (
+    <div className="fixed top-5 left-5 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-neutral-500/60 p-1">
+      <h5>Color</h5>
+
+      <input
+        type="color"
+        defaultValue="#ffffff"
+        onChange={(e) => {
+          game?.setColor(e.target.value);
+        }}
       />
     </div>
   );

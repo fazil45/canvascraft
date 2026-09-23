@@ -37,6 +37,7 @@ model Chat {
   message   String  
   userId    String
   roomId    Int
+  deleted   Boolean   @default(false)
   room      Room      @relation(fields: [roomId],references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId],references: [id])
 }

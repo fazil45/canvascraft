@@ -9,7 +9,7 @@ export function IconButton({
     activated?:boolean,
     onClick:()=>void
 }){
-    return <div className={`pointer rounded-md  border-white p-2 bg-neutral-700 hover:bg-neutral-500 ${activated ? "text-cyan-600/70" : "text-white"}`} onClick={onClick}>
+    return <div className={`pointer rounded-md  border-white p-2 bg-neutral-700 hover:bg-neutral-500 ${activated ? "text-emerald-600/70" : "text-white"}`} onClick={onClick}>
         {icon}
     </div>
 }
