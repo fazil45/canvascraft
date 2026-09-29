@@ -107,17 +107,20 @@ export class Game {
     textarea.style.background = "transparent";
     textarea.style.color = "white";
     textarea.style.font = "20px sans-serif";
-    textarea.style.border = "1px solid #888";
+    textarea.style.border = "none";
     textarea.style.outline = "none";
     textarea.style.resize = "none";
     textarea.style.overflow = "hidden";
     textarea.style.zIndex = "1000";
+    textarea.style.padding = "4px 4px";
     textarea.rows = 1;
     textarea.style.width = "200px";
 
     document.body.appendChild(textarea);
 
-    textarea.focus();
+    requestAnimationFrame(() => {
+      textarea.focus();
+    });
 
     this.activeTextEl = textarea;
     this.textOrigin = { x, y };
@@ -139,38 +142,48 @@ export class Game {
 
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
+        console.log("first");
         this.commitTextInput();
       }
     });
 
-    // textarea.addEventListener("blur", () => this.commitTextInput());
+    textarea.addEventListener("blur", () => this.commitTextInput());
   }
 
   private commitTextInput() {
-    if (!this.activeTextEl || !this.textOrigin) return;
+  const textarea = this.activeTextEl;
+  const origin = this.textOrigin;
 
-    const content = this.activeTextEl.value.trim();
-    const { x, y } = this.textOrigin;
+  if (!textarea || !origin) return;
 
-    this.activeTextEl.remove();
-    this.activeTextEl = null;
-    this.textOrigin = null;
+  const content = textarea.value.trim();
+  const { x, y } = origin;
 
-    if (!content) return;
+  // Clear state first
+  this.activeTextEl = null;
+  this.textOrigin = null;
 
-    const shape: Shape = {
-      id: crypto.randomUUID(),
-      type: "text",
-      color: this.color,
-      x,
-      y,
-      content,
-      fontSize: 20,
-    };
+  // Remove DOM element safely
+  if (textarea.isConnected) {
+    textarea.remove();
+  }
 
-    this.existingShapes.push(shape);
-    this.clearCanvas();
+  if (!content) return;
 
+  const shape: Shape = {
+    id: crypto.randomUUID(),
+    type: "text",
+    color: this.color,
+    x,
+    y,
+    content,
+    fontSize: 20,
+  };
+
+  this.existingShapes.push(shape);
+  this.clearCanvas();
+
+  if (this.socket.readyState === WebSocket.OPEN) {
     this.socket.send(
       JSON.stringify({
         type: "chat",
@@ -180,7 +193,7 @@ export class Game {
       }),
     );
   }
-
+}
   private cancelTextInput() {
     this.activeTextEl?.remove();
     this.activeTextEl = null;
@@ -252,7 +265,7 @@ export class Game {
         if (shape.points.some((p) => Math.hypot(p.x - x, p.y - y) < 6))
           return i;
       } else if (shape.type === "text") {
-        this.ctx.font = `${shape.fontSize}pc sans-serif`;
+        this.ctx.font = `${shape.fontSize}px sans-serif`;
         const w = this.ctx.measureText(shape.content).width;
         if (
           x >= shape.x &&
@@ -557,7 +570,7 @@ export class Game {
 
     if (this.isActiveTool === "mouse") {
       const index = this.getShapeAtPoint(e.clientX, e.clientY);
-      if (index !== null && typeof this.existingShapes[index].id === "number") {
+      if (index !== null && typeof this.existingShapes[index].id === "string") {
         this.selectedShapeId = this.existingShapes[index].id;
         this.clicked = true;
         this.startX = e.clientX;

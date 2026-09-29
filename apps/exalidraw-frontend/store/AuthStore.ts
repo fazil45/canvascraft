@@ -55,12 +55,13 @@ export const AuthStore = create<AuthStoreState>((set) => ({
           password,
           email,
         },
+        {
+          withCredentials:true
+        }
       );
 
       if (response.data.success) {
-        toast.success("Signin successfully");
-        const token = response.data.token;
-        localStorage.setItem("token", token);
+        toast.success(response.data.message);
         route.push("/dashboard");
       } else {
         toast.error(response.data.error);

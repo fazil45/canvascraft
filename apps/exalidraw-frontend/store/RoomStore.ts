@@ -39,7 +39,7 @@ export const RoomStore = create<RoomStoreState>((set) => ({
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_HTTP_BACKEND_URL}/room`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials:true,
         },
       );
 
@@ -62,9 +62,7 @@ export const RoomStore = create<RoomStoreState>((set) => ({
       const response = await axios.delete(
         `${process.env.NEXT_PUBLIC_HTTP_BACKEND_URL}/room/${id}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials:true,
         },
       );
 
@@ -88,9 +86,7 @@ export const RoomStore = create<RoomStoreState>((set) => ({
           slug: slug,
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials:true,
         },
       );
 

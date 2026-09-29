@@ -3,6 +3,7 @@ import userRouter from "./routes/auth.routes.js";
 import roomRouter from "./routes/room.route.js";
 import healthRouter from "./routes/health.route.js";
 import { middleware } from "./middlewares/authMiddleware.js";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use(cookieParser())
 
 app.use("/", userRouter);
 app.use("/health", healthRouter);

@@ -4,23 +4,7 @@ import { SECRET_TOKEN } from "@repo/backendcommon/secret";
 
 export function middleware(req: Request, res: Response, next: NextFunction) {
   try {
-    const tokenHeader = req.headers["authorization"];
-
-    if (!tokenHeader) {
-      return res.status(401).json({
-        success: false,
-        error: "No authorization token  provided",
-      });
-    }
-
-    if (!tokenHeader.startsWith("Bearer")) {
-      return res.status(401).json({
-        success: false,
-        error: "Authorization header must begin with Bearer",
-      });
-    }
-
-    const token = tokenHeader.split(" ")[1]!;
+    const token = req.cookies.token
 
     const decodedInformation = jwt.verify(token, SECRET_TOKEN);
     if (typeof decodedInformation === "string") {

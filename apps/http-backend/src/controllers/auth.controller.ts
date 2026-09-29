@@ -2,8 +2,17 @@ import { SECRET_TOKEN } from "@repo/backendcommon/secret";
 import { CreateUserSchema, SigninSchema } from "@repo/common/types";
 import { prisma } from "@repo/db/client";
 import bcrypt from "bcrypt";
-import { Request, Response } from "express";
+import { CookieOptions, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+
+const isProduction = process.env.NODE_ENV === "production";
+
+const cookieOptions:CookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? ("none" as const) : ("lax" as const),
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -97,9 +106,10 @@ export const signin = async (req: Request, res: Response) => {
         },
         SECRET_TOKEN,
       );
+      res.cookie("token",token,cookieOptions)
       return res.status(200).json({
         success: true,
-        token,
+        message:"Signin successfully",
       });
     } else {
       return res.status(401).json({
@@ -114,4 +124,13 @@ export const signin = async (req: Request, res: Response) => {
       error: "Failed to sign in",
     });
   }
+};
+
+export const signout = (_req: Request, res: Response) => {
+  res.clearCookie("token", cookieOptions);
+
+  return res.status(200).json({
+    success: true,
+    message: "Signed out successfully",
+  });
 };
