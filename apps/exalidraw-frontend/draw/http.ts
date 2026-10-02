@@ -1,16 +1,14 @@
 import axios from "axios";
 
 export async function getExistingShapes(roomId: number) {
-  const token = localStorage.getItem("token");
   const res = await axios.get(
     `${process.env.NEXT_PUBLIC_HTTP_BACKEND_URL}/chats/${roomId}`,
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      withCredentials:true
     },
   );
   const messages = res.data.messages;
+  console.log(messages)
 
   const shapes = messages.map((x: { message: string }) => {
     const messageData = JSON.parse(x.message);

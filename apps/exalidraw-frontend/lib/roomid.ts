@@ -4,13 +4,10 @@ import axios from "axios";
 
 export const getRoomId = async (slug: string) => {
   try {
-    const token = localStorage.getItem("token");
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_HTTP_BACKEND_URL}/room/${slug}`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        withCredentials:true
       },
     );
 

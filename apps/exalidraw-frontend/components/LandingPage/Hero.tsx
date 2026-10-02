@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const Hero = () => {
-  const isLoggedIn = useAuth();
+  const {data:user} = useAuth()
   return (
     <section className="relative overflow-hidden">
       <div className="absolute top-0 left-1/2 h-100 w-150 -translate-x-1/2 rounded-full bg-emerald-500/5 blur-[120px] dark:bg-emerald-500/10" />
@@ -26,7 +26,7 @@ const Hero = () => {
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href={isLoggedIn ? "/dashboard" : "/signup"}
+            href={user ? "/dashboard" : "/signup"}
             className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/10 transition-all hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
           >
             Get started

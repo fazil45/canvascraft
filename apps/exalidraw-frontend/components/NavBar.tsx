@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 export default function NavBar() {
   const logoutRef = useRef<HTMLButtonElement>(null);
   const route = useRouter();
-  const isLoggedIn = useAuth();
+  const {data:user} = useAuth();
   const handleLogout = async () => {
     localStorage.removeItem("token");
     route.push("/");
@@ -42,7 +42,7 @@ export default function NavBar() {
             <ThemeToggle />
           </div>
           <div>
-            {isLoggedIn ? (
+            {user ? (
               <div className="flex items-center justify-center gap-4">
                 <div
                   className="flex cursor-pointer items-center justify-center"

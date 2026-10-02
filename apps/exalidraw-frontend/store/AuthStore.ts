@@ -2,6 +2,7 @@ import { errorHandler } from "@/lib/ErrorHandler";
 import axios from "axios";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { toast } from "sonner";
+import { boolean } from "zod";
 import { create } from "zustand";
 
 type AuthStoreState = {
@@ -11,11 +12,7 @@ type AuthStoreState = {
     password: string,
     route: AppRouterInstance,
   ) => Promise<void>;
-  signin: (
-    email: string,
-    password: string,
-    route: AppRouterInstance,
-  ) => Promise<void>;
+  signin: (email: string, password: string) => Promise<void | boolean>;
 };
 
 export const AuthStore = create<AuthStoreState>((set) => ({
@@ -46,26 +43,22 @@ export const AuthStore = create<AuthStoreState>((set) => ({
       errorHandler(error);
     }
   },
-  signin: async (email: string, password: string, route: AppRouterInstance) => {
+  signin: async (email: string, password: string) => {
     try {
-      console.log("here");
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_HTTP_BACKEND_URL}/signin`,
+        `${process.env.NEXT_PUBLIC_HTTP_BACKEND_URL!}/signin`,
         {
           password,
           email,
         },
         {
-          withCredentials:true
-        }
+          withCredentials: true,
+        },
       );
 
-      if (response.data.success) {
-        toast.success(response.data.message);
-        route.push("/dashboard");
-      } else {
-        toast.error(response.data.error);
-      }
+      const responseData:boolean = response.data.success
+      console.log(responseData)
+      return responseData
     } catch (error) {
       errorHandler(error);
     }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Canvas } from "./Canvas";
+import Cookies from 'js-cookie';
 
 export default function RoomCanvas({
   roomId,
@@ -11,15 +12,14 @@ export default function RoomCanvas({
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
+    const token = Cookies.get("token");
+    console.log("token",token)
     const ws = new WebSocket(
       `${process.env.NEXT_PUBLIC_WS_BACKEND_URL}?token=${token}`,
     );
 
     ws.onopen = () => {
       console.log("WebSocket connected");
-
       setSocket(ws);
 
       ws.send(

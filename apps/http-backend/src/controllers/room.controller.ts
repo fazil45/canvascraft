@@ -12,7 +12,6 @@ export const createRoom = async (req: Request, res: Response) => {
         error: "Incorrect inputs",
       });
     }
-    //@ts-ignore
     const userId = req.userId;
     const room = await prisma.room.create({
       data: {
@@ -41,7 +40,6 @@ export const createRoom = async (req: Request, res: Response) => {
 
 export const getRooms = async (req: Request, res: Response) => {
   try {
-    //@ts-ignore
     const userID = req.userId;
     const rooms = await prisma.room.findMany({
       where: {
@@ -68,7 +66,6 @@ export const getRooms = async (req: Request, res: Response) => {
 export const deleteRoom = async (req: Request, res: Response) => {
   try {
     const roomId = Number(req.params.id);
-    //@ts-ignore
     const userId = req.userId;
 
     await prisma.chat.deleteMany({
@@ -130,16 +127,18 @@ export const allChatsDelete = async (req: Request, res: Response) => {
 export const fetchMessage = async (req: Request, res: Response) => {
   try {
     const roomId = Number(req.params["roomId"]);
+    console.log("roomId",roomId)
     const messages = await prisma.chat.findMany({
       where: {
         roomId: roomId,
-        deleted: false,
+        // deleted: false,
       },
       orderBy: {
         id: "desc",
       },
       take: 500,
     });
+    console.log("Messages",messages)
     res.status(200).json({
       success: true,
       messages: messages,
@@ -158,8 +157,7 @@ export const getRoomSlug = async (req: Request, res: Response) => {
     const slug = req.params.slug;
     const room = await prisma.room.findFirst({
       where: {
-        //@ts-ignore
-        slug: slug,
+        slug: slug as string,
       },
     });
 

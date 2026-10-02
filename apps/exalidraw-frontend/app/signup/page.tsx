@@ -1,6 +1,6 @@
 import {  FormSignup } from "@/components/SignupForm";
 
-export default function Signin() {
+export default function Signup() {
   return (
     <div className="overflow-hidden">
       <div

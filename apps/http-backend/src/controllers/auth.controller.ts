@@ -7,8 +7,8 @@ import jwt from "jsonwebtoken";
 
 const isProduction = process.env.NODE_ENV === "production";
 
-const cookieOptions:CookieOptions = {
-  httpOnly: true,
+const cookieOptions: CookieOptions = {
+  httpOnly: false,
   secure: isProduction,
   sameSite: isProduction ? ("none" as const) : ("lax" as const),
   maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -36,7 +36,7 @@ export const signup = async (req: Request, res: Response) => {
     if (userAlreadyExists) {
       return res.status(409).json({
         success: false,
-        error: `User with email:- ${email} already exists`,
+        error: `Forbidden request`,
       });
     }
 
@@ -86,14 +86,7 @@ export const signin = async (req: Request, res: Response) => {
     if (!checkUser) {
       return res.status(404).json({
         success: false,
-        error: `User with email:- ${email} does not exists`,
-      });
-    }
-
-    if (!checkUser || !checkUser.password) {
-      return res.status(404).json({
-        success: false,
-        error: "user not exist",
+        error: `Invalid inputs`,
       });
     }
 
@@ -106,10 +99,10 @@ export const signin = async (req: Request, res: Response) => {
         },
         SECRET_TOKEN,
       );
-      res.cookie("token",token,cookieOptions)
+      res.cookie("token", token, cookieOptions);
       return res.status(200).json({
         success: true,
-        message:"Signin successfully",
+        message: "Signin successfully",
       });
     } else {
       return res.status(401).json({
@@ -118,7 +111,6 @@ export const signin = async (req: Request, res: Response) => {
       });
     }
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       success: false,
       error: "Failed to sign in",
@@ -126,11 +118,38 @@ export const signin = async (req: Request, res: Response) => {
   }
 };
 
-export const signout = (_req: Request, res: Response) => {
+export const signout = async (req: Request, res: Response) => {
   res.clearCookie("token", cookieOptions);
 
   return res.status(200).json({
     success: true,
     message: "Signed out successfully",
   });
+};
+
+export const me = async (req: Request, res: Response) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.userId,
+      },
+      select: {
+        id:true,
+        name: true,
+        email: true,
+        photo: true,
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({ success: false, message: "please signin" });
+    }
+
+    res.status(200).json({ success: true, user: user });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to sign in",
+    });
+  }
 };

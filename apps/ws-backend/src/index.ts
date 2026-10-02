@@ -161,11 +161,14 @@ wss.on("connection", function connection(ws, request) {
       const roomId = Number(parsedData.roomId);
       const message = parsedData.message;
       const clientId = parsedData.clientId;
+      console.log(message)
 
       try {
         const createChat = await prisma.chat.create({
           data: { roomId: Number(roomId), message, userId },
         });
+
+        console.log(createChat)
 
         const parsedMessage = JSON.parse(message);
         const tempId = parsedMessage.shape.id;

@@ -7,11 +7,14 @@ import { useRouter } from "next/navigation";
 import { Button } from "./ButtonComponent";
 import { SigninSchema } from "@repo/common/types";
 import FieldInfo from "./ErrorMessage";
-import { AuthStore } from "@/store/AuthStore";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { AuthStore } from "@/store/AuthStore";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export function FormSignin() {
   const route = useRouter();
+  const queryClient = useQueryClient();
   const { signin } = AuthStore();
 
   const form = useForm({
@@ -25,12 +28,21 @@ export function FormSignin() {
     },
 
     onSubmit: async ({ value }) => {
-      signin(value.email, value.password, route);
+      const success = await signin(value.email, value.password);
+      console.log("success",success)
+      if (success) {
+        await queryClient.invalidateQueries({
+          queryKey: ["current-user"],
+        });
+        route.push("/dashboard");
+      } else {
+        toast.error("Invalid inputs, please try again");
+      }
     },
   });
 
   return (
-    <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-white px-4 py-10 text-slate-900 dark:bg-slate-950 dark:text-white sm:px-6">
+    <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-white px-4 py-10 text-slate-900 sm:px-6 dark:bg-slate-950 dark:text-white">
       {/* Same subtle glow as landing page */}
       <div className="pointer-events-none absolute top-0 left-1/2 h-72 w-96 -translate-x-1/2 rounded-full bg-emerald-500/5 blur-[100px] dark:bg-emerald-500/10" />
 
