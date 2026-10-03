@@ -111,14 +111,14 @@ export default function Dashboard() {
       <div className="mx-auto max-w-6xl px-6 py-8">
         <div className="grid gap-5 sm:grid-cols-2">
           {/* Create card */}
-          <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:border-slate-300 hover:shadow-lg dark:border-white/5 dark:bg-white/5 dark:hover:border-white/10">
+          <div className="group relative overflow-hidden rounded-md border border-slate-200 bg-white p-6 transition-all hover:border-slate-300 hover:shadow-lg dark:border-white/5 dark:bg-white/5 dark:hover:border-white/10">
             <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-emerald-500/5 blur-2xl transition-opacity group-hover:opacity-100" />
             <div className="relative">
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-500/10">
                 <Plus className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
               </div>
               <h2 className="text-lg font-semibold">Create a new room</h2>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              <p className="mt-1 mb-3 text-sm text-slate-500 dark:text-slate-400">
                 Start with a blank canvas and invite others with a room code.
               </p>
               <div>
@@ -130,7 +130,7 @@ export default function Dashboard() {
                 >
                   <createForm.Field name="createSlug">
                     {(field) => (
-                      <div className="flex items-center justify-center">
+                      <div className="flex items-center justify-center gap-8">
                         <div className="flex flex-col">
                           <Input
                             placeholder="Create Room Code like Room1"
@@ -148,10 +148,10 @@ export default function Dashboard() {
                         <button
                           type="submit"
                           disabled={roomCreationLoading}
-                          className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-slate-800 disabled:opacity-50 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                          className="inline-flex items-center gap-1 rounded-md bg-slate-900 px-5 lg:py-2 py-1 text-sm font-semibold text-white transition-all hover:bg-slate-800 disabled:opacity-50 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
                         >
-                          <Plus className="h-4.5 w-4.5" />
-                          {roomCreationLoading ? "Creating..." : "Create room"}
+                          <Plus className="h-4 w-4" />
+                          {roomCreationLoading ? "Creating..." : "Create"}
                         </button>
                       </div>
                     )}
@@ -162,7 +162,7 @@ export default function Dashboard() {
           </div>
 
           {/* Join card */}
-          <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:border-slate-300 hover:shadow-lg dark:border-white/5 dark:bg-white/5 dark:hover:border-white/10">
+          <div className="group relative overflow-hidden rounded-md border border-slate-200 bg-white p-6 transition-all hover:border-slate-300 hover:shadow-lg dark:border-white/5 dark:bg-white/5 dark:hover:border-white/10">
             <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-sky-500/5 blur-2xl" />
             <div className="relative">
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50 dark:bg-sky-500/10">
@@ -172,7 +172,7 @@ export default function Dashboard() {
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Have a code from someone? Enter it to join their room.
               </p>
-              <div className="mt-5 flex items-center gap-2">
+              <div className="mt-3 flex items-center gap-2">
                 <div className="relative">
                   <form
                     onSubmit={(e) => {
@@ -200,7 +200,7 @@ export default function Dashboard() {
                           <div className="xs:gap-2 flex items-center justify-center xl:gap-3">
                             <button
                               type="submit"
-                              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
+                              className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
                             >
                               <ArrowRightCircle className="h-4 w-4" />
                               Join
@@ -235,7 +235,7 @@ export default function Dashboard() {
               ))}
             </div>
           ) : roomsCreated.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white py-16 dark:border-white/10 dark:bg-white/5">
+            <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-slate-300 bg-white py-16 dark:border-white/10 dark:bg-white/5">
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-white/5">
                 <PenTool className="h-6 w-6 text-slate-400 dark:text-slate-500" />
               </div>

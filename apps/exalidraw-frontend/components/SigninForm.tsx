@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "./ButtonComponent";
 import { SigninSchema } from "@repo/common/types";
 import FieldInfo from "./ErrorMessage";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { AuthStore } from "@/store/AuthStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -15,7 +15,7 @@ import { toast } from "sonner";
 export function FormSignin() {
   const route = useRouter();
   const queryClient = useQueryClient();
-  const { signin } = AuthStore();
+  const { signin, signinLoading } = AuthStore();
 
   const form = useForm({
     defaultValues: {
@@ -29,7 +29,7 @@ export function FormSignin() {
 
     onSubmit: async ({ value }) => {
       const success = await signin(value.email, value.password);
-      console.log("success",success)
+      console.log("success", success);
       if (success) {
         await queryClient.invalidateQueries({
           queryKey: ["current-user"],
@@ -139,8 +139,15 @@ export function FormSignin() {
             type="submit"
             className="w-full justify-center gap-2"
           >
-            Sign in
-            <ArrowRight className="h-4 w-4" />
+            {signinLoading ? (
+              <Loader2 className="h-8 w-8 animate-spin" />
+            ) : (
+              <div className="flex gap-2">
+                {" "}
+                Sign in
+                <ArrowRight className="h-4 w-4" />
+              </div>
+            )}
           </Button>
         </form>
 
@@ -150,7 +157,7 @@ export function FormSignin() {
             Don't have an account?{" "}
             <button
               onClick={() => route.push("/signup")}
-              className="font-semibold text-emerald-500 transition-colors hover:text-teal-500"
+              className="cursor-pointer font-semibold text-emerald-500 transition-colors hover:text-teal-500"
             >
               Create one
             </button>

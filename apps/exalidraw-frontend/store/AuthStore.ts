@@ -6,6 +6,8 @@ import { boolean } from "zod";
 import { create } from "zustand";
 
 type AuthStoreState = {
+  signupLoading: boolean;
+  signinLoading: boolean;
   signup: (
     name: string,
     email: string,
@@ -16,6 +18,8 @@ type AuthStoreState = {
 };
 
 export const AuthStore = create<AuthStoreState>((set) => ({
+  signinLoading: false,
+  signupLoading: false,
   signup: async (
     name: string,
     email: string,
@@ -23,7 +27,7 @@ export const AuthStore = create<AuthStoreState>((set) => ({
     route: AppRouterInstance,
   ) => {
     try {
-      console.log("here");
+      set({signupLoading:true})
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_HTTP_BACKEND_URL}/signup`,
         {
@@ -41,10 +45,13 @@ export const AuthStore = create<AuthStoreState>((set) => ({
       }
     } catch (error) {
       errorHandler(error);
+    } finally {
+      set({signupLoading:false})
     }
   },
   signin: async (email: string, password: string) => {
     try {
+      set({signinLoading:true})
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_HTTP_BACKEND_URL!}/signin`,
         {
@@ -56,11 +63,13 @@ export const AuthStore = create<AuthStoreState>((set) => ({
         },
       );
 
-      const responseData:boolean = response.data.success
-      console.log(responseData)
-      return responseData
+      const responseData: boolean = response.data.success;
+      console.log(responseData);
+      return responseData;
     } catch (error) {
       errorHandler(error);
+    } finally {
+      set({signinLoading:false})
     }
   },
 }));

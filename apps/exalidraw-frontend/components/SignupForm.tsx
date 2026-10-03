@@ -8,11 +8,11 @@ import { Button } from "./ButtonComponent";
 import { CreateUserSchema } from "@repo/common/types";
 import FieldInfo from "./ErrorMessage";
 import { AuthStore } from "@/store/AuthStore";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Loader2, Sparkles } from "lucide-react";
 
 export function FormSignup() {
   const route = useRouter();
-  const { signup } = AuthStore();
+  const { signup, signupLoading } = AuthStore();
 
   const form = useForm({
     defaultValues: {
@@ -31,8 +31,7 @@ export function FormSignup() {
   });
 
   return (
-    <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-neutral-200 px-4 py-4 text-slate-900 dark:bg-slate-950 dark:text-neutral-200 sm:px-6">
-
+    <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-neutral-200 px-4 py-4 text-slate-900 sm:px-6 dark:bg-slate-950 dark:text-neutral-200">
       {/* Theme Toggle */}
       <div className="absolute top-5 right-5 z-20">
         <ThemeToggle />
@@ -152,8 +151,15 @@ export function FormSignup() {
             size="lg"
             className="w-full justify-center gap-2"
           >
-            Create account
-            <ArrowRight className="h-4 w-4" />
+            {signupLoading ? (
+              <Loader2 className="h-8 w-8 animate-spin" />
+            ) : (
+              <div className="flex gap-2">
+                {" "}
+                Create
+                <ArrowRight className="h-4 w-4" />
+              </div>
+            )}
           </Button>
         </form>
 
@@ -164,7 +170,7 @@ export function FormSignup() {
             <button
               type="button"
               onClick={() => route.push("/signin")}
-              className="font-semibold text-emerald-500 transition-colors hover:text-teal-500"
+              className="cursor-pointer font-semibold text-emerald-500 transition-colors hover:text-teal-500"
             >
               Sign in
             </button>

@@ -24,7 +24,7 @@ export default function Input({
   disabled
 }: Input) {
   return (
-    <div className="xl:m-2   xs:m-3 md:m-3">
+    <div className="xl:m-2  xs:m-3 md:m-3">
       <label className="dark:text-neutral-300 text-neutral-800">{title}</label>
       <input
         onChange={(e)=>onChange!(e.target.value)}
@@ -33,7 +33,7 @@ export default function Input({
         onBlur={onBlur}
         placeholder={placeholder}
         value={value}
-        className={cn("xs:p-1 rounded-lg border dark:border-white border-neutral-700 w-full xl:p-2 hover:border-cyan-400/60 xs:placeholder:text-xs dark:placeholder:text-neutral-400 placeholder:text-neutral-600 text-neutral-900 outline-none dark:text-neutral-300",className)}
+        className={cn("xs:p-1 rounded-md border dark:border-neutral-400 border-neutral-700 w-full xl:p-2 hover:border-cyan-400/60 xs:placeholder:text-xs dark:placeholder:text-neutral-400 placeholder:text-neutral-600 text-neutral-900 outline-none dark:text-neutral-300",className)}
       />  
     </div>
   );
