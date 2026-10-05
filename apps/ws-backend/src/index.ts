@@ -1,3 +1,4 @@
+import "dotenv/config"
 import { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
 import { prisma } from "@repo/db/client";
@@ -17,8 +18,8 @@ const users: User[] = [];
 
 function checkUser(token: string): string | null {
   try {
-    const decoded = jwt.verify(token, SECRET_TOKEN);
-
+    console.log(token)
+    const decoded = jwt.verify(token, SECRET_TOKEN!);
     if (typeof decoded === "string") {
       return null;
     }
@@ -28,9 +29,12 @@ function checkUser(token: string): string | null {
     }
     return decoded.userId;
   } catch (error) {
+    console.log(error)
     return null;
   }
 }
+
+
 
 async function findUserName(userId: string) {
   try {
@@ -67,7 +71,7 @@ wss.on("connection", function connection(ws, request) {
   const userId = checkUser(token);
 
   if (userId === null) {
-    ws.close();
+    ws.close(4001,"Unauthorized");
     return;
   }
 
@@ -88,6 +92,7 @@ wss.on("connection", function connection(ws, request) {
     }
 
     if (parsedData.type === "join_room") {
+      console.log("here")
       const user = users.find((x) => x.ws === ws);
 
       if (!user) return;

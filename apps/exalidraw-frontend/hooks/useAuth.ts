@@ -7,7 +7,7 @@ type User = {
       id: string;
       name: string;
       email: string;
-      photo: string;
+      photo: string | null;
     };
   };
 };

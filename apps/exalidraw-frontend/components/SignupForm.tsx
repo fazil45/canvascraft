@@ -43,7 +43,7 @@ export function FormSignup() {
         <button
           type="button"
           onClick={() => route.push("/")}
-          className="mx-auto block text-2xl font-bold tracking-tight"
+          className="mx-auto block text-xl font-bold tracking-tight"
         >
           Canvas
           <span className="bg-linear-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">
@@ -52,7 +52,7 @@ export function FormSignup() {
         </button>
 
         {/* Badge */}
-        <div className="mt-3 flex justify-center">
+        <div className="mt-2 flex justify-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
             <Sparkles className="h-3.5 w-3.5 text-emerald-500" />
             Start collaborating
@@ -60,12 +60,12 @@ export function FormSignup() {
         </div>
 
         {/* Heading */}
-        <div className="mt-2 text-center">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+        <div className="mt-1 text-center">
+          <h1 className="text-xl font-bold tracking-tight sm:text-3xl">
             Create your account
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
+          <p className="text-xs leading-6 text-slate-500 dark:text-slate-400">
             Create your account and start sketching together.
           </p>
         </div>
@@ -76,7 +76,7 @@ export function FormSignup() {
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="mt-2 space-y-5"
+          className=""
         >
           {/* Name */}
           <form.Field
@@ -149,12 +149,12 @@ export function FormSignup() {
             type="submit"
             variant="secondary"
             size="lg"
-            className="w-full justify-center gap-2"
+            className="w-full justify-center gap-2 mt-2"
           >
             {signupLoading ? (
               <Loader2 className="h-8 w-8 animate-spin" />
             ) : (
-              <div className="flex gap-2">
+              <div className="flex items-center justify-center gap-2">
                 {" "}
                 Create
                 <ArrowRight className="h-4 w-4" />
@@ -163,8 +163,25 @@ export function FormSignup() {
           </Button>
         </form>
 
+        <div className="my-3 flex items-center gap-3 text-xs text-slate-400">
+          <div className="h-px flex-1 bg-slate-200 dark:bg-white/10" />
+          OR
+          <div className="h-px flex-1 bg-slate-200 dark:bg-white/10" />
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            window.location.href = `${process.env.NEXT_PUBLIC_HTTP_BACKEND_URL}/auth/google`;
+          }}
+          className="mt-1 flex w-full items-center justify-center gap-3 rounded-md border border-slate-300 px-4 py-3 text-sm font-semibold transition-colors hover:bg-slate-50 dark:border-white/15 dark:hover:bg-white/5 cursor-pointer"
+        >
+          <span className="text-base font-bold">G</span>
+          Continue with Google
+        </button>
+
         {/* Sign in */}
-        <div className="mt-4 border-t border-slate-200 pt-6 text-center dark:border-white/10">
+        <div className="pt-2 text-center dark:border-white/10">
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Already have an account?{" "}
             <button
@@ -177,10 +194,6 @@ export function FormSignup() {
           </p>
         </div>
 
-        {/* Footer */}
-        <p className="mt-3 text-center text-xs text-slate-400 dark:text-slate-600">
-          Sketch ideas together, on one canvas.
-        </p>
       </div>
     </main>
   );

@@ -14,30 +14,34 @@ datasource db {
 }
 
 model User {
-  id          String      @id @default(uuid())
-  email       String      @unique
-  name        String?
-  password    String
-  photo       String?
-  rooms       Room[]
-  chats       Chat[]
+  id                         String    @id @default(uuid())
+  email                      String    @unique
+  name                       String?
+  password                   String?
+  photo                      String?
+  googleId                   String?   @unique
+  emailVerifiedAt            DateTime?
+  verificationTokenHash      String?   @unique
+  verificationTokenExpiresAt DateTime?
+  rooms                      Room[]
+  chats                      Chat[]
 }
 
 model Room {
-  id           Int        @id @default(autoincrement())
-  slug         String        @unique
-  createdAt    DateTime   @default(now()) 
-  adminId      String
-  admin        User        @relation(fields: [adminId], references: [id])
-  chats        Chat[]
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  adminId   String
+  admin     User     @relation(fields: [adminId], references: [id])
+  chats     Chat[]
 }
 
 model Chat {
-  id        Int       @id @default(autoincrement())
-  message   String  
-  userId    String
-  roomId    Int
-  deleted   Boolean   @default(false)
-  room      Room      @relation(fields: [roomId],references: [id], onDelete: Cascade)
-  user      User      @relation(fields: [userId],references: [id])
+  id      Int     @id @default(autoincrement())
+  message String
+  userId  String
+  roomId  Int
+  deleted Boolean @default(false)
+  room    Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
 }

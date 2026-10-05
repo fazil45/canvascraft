@@ -1,11 +1,11 @@
-import express, { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { SECRET_TOKEN } from "@repo/backendcommon/secret";
 
 export function middleware(req: Request, res: Response, next: NextFunction) {
   try {
-    const token = req.cookies.token
-
+    const token = req.cookies.token;
+    console.log(token)
     const decodedInformation = jwt.verify(token, SECRET_TOKEN);
     if (typeof decodedInformation === "string") {
       return res.status(401).json({
@@ -15,7 +15,6 @@ export function middleware(req: Request, res: Response, next: NextFunction) {
     }
 
     if (decodedInformation) {
-      //@ts-ignore
       req.userId = decodedInformation.userId;
       next();
     } else {

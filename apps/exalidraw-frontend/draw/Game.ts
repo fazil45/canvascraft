@@ -58,6 +58,7 @@ export class Game {
     this.initHandlers();
     this.initMouseHandlers();
     this.initKeyboardHandlers();
+    this.updateCursor();
   }
 
   setTool(tool: ToolShape) {
@@ -65,6 +66,7 @@ export class Game {
       this.commitTextInput();
     }
     this.isActiveTool = tool;
+    this.updateCursor();
   }
 
   setColor(color: string) {
@@ -213,12 +215,19 @@ export class Game {
   }
 
   private clearCanvas() {
+    console.log("existingShapes:", this.existingShapes);
     this.ctx.fillStyle = "rgba(0,0,0)";
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.existingShapes.forEach((shape) => {
       if (shape) drawShape(this.ctx, shape);
     });
+    if (this.clicked && this.selectedShapeId !== null) {
+      const selectedShape = this.existingShapes.find(
+        (shape) => shape.id === this.selectedShapeId,
+      );
+      if (selectedShape) this.drawSelectionBoundary(selectedShape);
+    }
   }
 
   private keyDownHandler = (e: KeyboardEvent) => {
@@ -252,6 +261,7 @@ export class Game {
       this.clicked = true;
       this.startX = x;
       this.startY = y;
+      this.updateCursor();
       return;
     }
 
@@ -269,6 +279,7 @@ export class Game {
 
     if (!this.clicked) return;
     this.clicked = false;
+    this.updateCursor();
 
     const { x, y } = this.getPointer(e);
     const shape = this.createShapeFromDrag(x, y);
@@ -315,6 +326,8 @@ export class Game {
 
     this.selectedShapeId = null;
     this.clicked = false;
+    this.updateCursor();
+    this.clearCanvas();
   }
 
   private dragSelectedShape(x: number, y: number) {
@@ -511,6 +524,87 @@ export class Game {
   private getPointer(e: MouseEvent): Point {
     const rect = this.canvas.getBoundingClientRect();
     return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }
+
+  private drawSelectionBoundary(shape: Shape) {
+    const bounds = this.getShapeBounds(shape);
+    const padding = 6;
+
+    this.ctx.save();
+    this.ctx.strokeStyle = "#38bdf8";
+    this.ctx.lineWidth = 1.5;
+    this.ctx.setLineDash([6, 4]);
+    this.ctx.strokeRect(
+      bounds.left - padding,
+      bounds.top - padding,
+      bounds.right - bounds.left + padding * 2,
+      bounds.bottom - bounds.top + padding * 2,
+    );
+    this.ctx.restore();
+  }
+
+  private getShapeBounds(shape: Shape) {
+    switch (shape.type) {
+      case "rect":
+        return {
+          left: Math.min(shape.x, shape.x + shape.width),
+          top: Math.min(shape.y, shape.y + shape.height),
+          right: Math.max(shape.x, shape.x + shape.width),
+          bottom: Math.max(shape.y, shape.y + shape.height),
+        };
+      case "circle":
+        return {
+          left: shape.centerX - Math.abs(shape.radius),
+          top: shape.centerY - Math.abs(shape.radius),
+          right: shape.centerX + Math.abs(shape.radius),
+          bottom: shape.centerY + Math.abs(shape.radius),
+        };
+      case "arrowPoint":
+        return {
+          left: Math.min(shape.startX, shape.endX),
+          top: Math.min(shape.startY, shape.endY),
+          right: Math.max(shape.startX, shape.endX),
+          bottom: Math.max(shape.startY, shape.endY),
+        };
+      case "pencil":
+        return shape.points.reduce(
+          (bounds, point) => ({
+            left: Math.min(bounds.left, point.x),
+            top: Math.min(bounds.top, point.y),
+            right: Math.max(bounds.right, point.x),
+            bottom: Math.max(bounds.bottom, point.y),
+          }),
+          {
+            left: shape.points[0]?.x ?? 0,
+            top: shape.points[0]?.y ?? 0,
+            right: shape.points[0]?.x ?? 0,
+            bottom: shape.points[0]?.y ?? 0,
+          },
+        );
+      case "text": {
+        this.ctx.font = `${shape.fontSize}px sans-serif`;
+        const width = Math.max(
+          ...shape.content
+            .split("\n")
+            .map((line) => this.ctx.measureText(line).width),
+          0,
+        );
+        return {
+          left: shape.x,
+          top: shape.y - shape.fontSize,
+          right: shape.x + width,
+          bottom: shape.y,
+        };
+      }
+    }
+  }
+
+  private updateCursor() {
+    if (this.isActiveTool !== "mouse") {
+      this.canvas.style.cursor = "crosshair";
+      return;
+    }
+    this.canvas.style.cursor = this.clicked ? "grabbing" : "grab";
   }
 
   private send(payload: object) {

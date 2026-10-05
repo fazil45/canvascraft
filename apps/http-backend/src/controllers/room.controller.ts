@@ -1,3 +1,4 @@
+import "dotenv/config"
 import { CreateRoomSchema } from "@repo/common/types";
 import { prisma } from "@repo/db/client";
 import { Request, Response } from "express";
@@ -127,18 +128,16 @@ export const allChatsDelete = async (req: Request, res: Response) => {
 export const fetchMessage = async (req: Request, res: Response) => {
   try {
     const roomId = Number(req.params["roomId"]);
-    console.log("roomId",roomId)
     const messages = await prisma.chat.findMany({
       where: {
         roomId: roomId,
-        // deleted: false,
+        deleted: false,
       },
       orderBy: {
         id: "desc",
       },
       take: 500,
     });
-    console.log("Messages",messages)
     res.status(200).json({
       success: true,
       messages: messages,

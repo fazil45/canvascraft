@@ -6,13 +6,15 @@ import ThemeToggle from "./ThemeToggleComponent";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
+import { AuthStore } from "@/store/AuthStore";
 
 export default function NavBar() {
   const logoutRef = useRef<HTMLButtonElement>(null);
   const route = useRouter();
-  const {data:user} = useAuth();
+  const { data: user } = useAuth();
+  const { signout } = AuthStore();
   const handleLogout = async () => {
-    localStorage.removeItem("token");
+    await signout();
     route.push("/");
   };
 
@@ -44,12 +46,22 @@ export default function NavBar() {
           <div>
             {user ? (
               <div className="flex items-center justify-center gap-4">
-                <div
+                <Link
+                  href="/profile"
                   className="flex cursor-pointer items-center justify-center"
-                  onClick={showLogout}
+                  title="View profile"
                 >
-                  <UserIcon />
-                </div>
+                  {user.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={user.photo}
+                      alt=""
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <UserIcon />
+                  )}
+                </Link>
                 <button
                   onClick={() => route.push("/dashboard")}
                   className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
