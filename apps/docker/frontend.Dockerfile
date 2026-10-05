@@ -4,12 +4,12 @@ RUN corepack enable
 WORKDIR /app
 
 FROM base AS pruner
-ARG APP=exalidraw-frontend
+ARG APP=web
 COPY . .
 RUN pnpm dlx turbo prune ${APP} --docker
 
 FROM base AS builder
-ARG APP=exalidraw-frontend
+ARG APP=web
 # NEXT_PUBLIC_* vars are baked in at BUILD time
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_WS_URL
@@ -25,4 +25,4 @@ COPY --from=builder /app/apps/${APP}/.next/standalone ./
 COPY --from=builder /app/apps/${APP}/.next/static ./apps/${APP}/.next/static
 COPY --from=builder /app/apps/${APP}/public ./apps/${APP}/public
 EXPOSE 3000
-CMD ["node", "apps/exalidraw-frontend/server.js"]
+CMD ["node", "apps/web/server.js"]
