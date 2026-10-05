@@ -13,6 +13,7 @@ export default function NavBar() {
   const route = useRouter();
   const { data: user } = useAuth();
   const { signout } = AuthStore();
+  
   const handleLogout = async () => {
     await signout();
     route.push("/");

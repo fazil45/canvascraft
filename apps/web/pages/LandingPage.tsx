@@ -25,42 +25,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function LandingPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
-  const route = useRouter();
-  const features = [
-    {
-      icon: <User />,
-      title: "Real-time Collaboration",
-      description:
-        "Work together with your team in real-time. See changes instantly as they happen.",
-    },
-    {
-      icon: <Shapes />,
-      title: "Different shape and Tool",
-      description: "Can use different shapes and tools.",
-    },
-
-    {
-      icon: <Palette />,
-      title: "Modern Minimal UI",
-      description:
-        "Beautiful interface with light & dark themes for distraction-free work.",
-    },
-    {
-      icon: <Download />,
-      title: "Export Options",
-      description:
-        "Export your work in multiple formats including PNG, SVG, and PDF.",
-    },
-  ];
   return (
     <main>
       <div>
