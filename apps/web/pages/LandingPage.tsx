@@ -7,6 +7,7 @@ import Footer from "@/components/LandingPage/Footer";
 import Hero from "@/components/LandingPage/Hero";
 import NavBar from "@/components/NavBar";
 import ThemeToggle from "@/components/ThemeToggleComponent";
+import QueryProvider from "@/provider/queryProvider";
 import {
   ArrowRight,
   Download,
@@ -28,6 +29,7 @@ export default function LandingPage() {
   return (
     <main>
       <div>
+        <QueryProvider>
         <div className="min-h-screen bg-gray-50 text-slate-900 opacity-80 transition-colors dark:bg-[#0a0a0f] dark:text-slate-100">
           <NavBar />
           <Hero />
@@ -35,6 +37,7 @@ export default function LandingPage() {
           <CTA />
           <Footer />
         </div>
+        </QueryProvider>
       </div>
     </main>
   );
