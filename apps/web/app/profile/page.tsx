@@ -68,14 +68,13 @@ export default function ProfilePage() {
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
         <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-emerald-100 text-3xl font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
           {user.photo ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={user.photo}
               alt=""
               className="h-full w-full object-cover"
             />
           ) : (
-            user.name.charAt(0).toUpperCase()
+            <div className="">{user.name.charAt(0).toUpperCase()}</div>
           )}
         </div>
         <div className="flex-1">
@@ -119,7 +118,7 @@ export default function ProfilePage() {
         ) : (
           <button
             onClick={startEditing}
-            className="inline-flex items-center gap-2 self-start rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:border-white/20 dark:hover:bg-white/10"
+            className="inline-flex items-center gap-2 self-start rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:border-white/20 dark:hover:bg-white/10 cursor-pointer"
           >
             <Pencil className="h-4 w-4" />
             Edit profile
@@ -160,7 +159,7 @@ function ProfileShell({ children }: { children: React.ReactNode }) {
         <div className="flex max-w-3xl items-center gap-3 px-6 py-4">
           <button
             onClick={() => router.back()}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/5"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/5 cursor-pointer"
             title="Back"
           >
             <ArrowLeft className="h-5 w-5" />

@@ -52,15 +52,15 @@ export default function NavBar() {
                   className="flex cursor-pointer items-center justify-center"
                   title="View profile"
                 >
-                  {user.photo ? (
+                  {user.photo === null ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={user.photo}
+                      src={user.photo!}
                       alt=""
                       className="h-8 w-8 rounded-full object-cover"
                     />
                   ) : (
-                    <UserIcon />
+                    <div className="h-8 w-8 rounded-full bg-emerald-500 text-white flex items-center justify-center">{user.email.charAt(0).toUpperCase()}</div>
                   )}
                 </Link>
                 <button

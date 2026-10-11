@@ -5,9 +5,18 @@ import { SECRET_TOKEN } from "@repo/backendcommon/secret";
 export function middleware(req: Request, res: Response, next: NextFunction) {
   try {
     const token = req.cookies.token;
-    console.log(token)
+    if (typeof token !== "string" || token.length === 0) {
+      return res.status(401).json({
+        success: false,
+        error: "Invalid authorization token",
+      });
+    }
+
     const decodedInformation = jwt.verify(token, SECRET_TOKEN);
-    if (typeof decodedInformation === "string") {
+    if (
+      typeof decodedInformation === "string" ||
+      typeof decodedInformation.userId !== "string"
+    ) {
       return res.status(401).json({
         success: false,
         error: "Invalid authorization token",
@@ -24,7 +33,6 @@ export function middleware(req: Request, res: Response, next: NextFunction) {
       });
     }
   } catch (error) {
-    console.log(error);
     return res.status(401).json({
       success: false,
       error: "Invalid authorization token",

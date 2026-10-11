@@ -1,4 +1,4 @@
-import "dotenv/config"
+import "dotenv/config";
 import {
   CreateUserSchema,
   SigninSchema,
@@ -6,14 +6,17 @@ import {
 } from "@repo/common/types";
 import { prisma } from "@repo/db/client";
 import bcrypt from "bcrypt";
-import {  Request, Response } from "express";
+import { Request, Response } from "express";
 import crypto from "node:crypto";
 import { sendEmail } from "../services/email.js";
 import { googleClient } from "../services/OAuth2client.js";
 import { cookieOptions } from "../utils/cookieOptions.js";
 import { hashToken, setAuthCookie } from "../utils/authToken.js";
 
-const frontendUrl = process.env.FRONTEND_URL ?? "http://localhost:3000";
+const frontendUrl =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : process.env.FRONTEND_URL!;
 
 const issueVerification = async (userId: string, email: string) => {
   const token = crypto.randomBytes(32).toString("hex");
@@ -169,6 +172,9 @@ export const googleStart = (_req: Request, res: Response) => {
 
 export const googleCallback = async (req: Request, res: Response) => {
   try {
+    console.log("CODE", req.query.code);
+    console.log("STATE", req.query.state);
+    console.log("OAuth State", req.cookies.google_oauth_state);
     if (!req.query.code || req.query.state !== req.cookies.google_oauth_state) {
       return res.redirect(`${frontendUrl}/signin?error=google_auth`);
     }

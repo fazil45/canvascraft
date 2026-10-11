@@ -5,8 +5,13 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**",".dist/**", "!.next/cache/**","src/generated/**"],
-       "env": ["DATABASE_URL","JWT_SECRET"]
+      "outputs": [
+        ".next/**",
+        ".dist/**",
+        "!.next/cache/**",
+        "src/generated/**"
+      ],
+      "env": ["DATABASE_URL", "JWT_SECRET"]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -18,15 +23,15 @@
       "cache": false,
       "persistent": true
     },
-    "db:generate": {
-    "cache": false
-  },
-  "db:migrate": {
-    "cache": false,
-    "persistent": true 
-  },
-  "db:deploy": {
-    "cache": false
-  }
+    "db:generate": {  
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:deploy": {
+      "cache": false
+    }
   }
 }
