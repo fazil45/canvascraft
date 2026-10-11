@@ -12,7 +12,7 @@ const Footer = () => {
                     strokeWidth={2.5}
                   />
                 </div>
-                Sketchboard
+                Canvascraft
               </div>
               <p className="text-xs text-slate-400 dark:text-slate-500">
                 Built with Love
