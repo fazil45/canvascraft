@@ -147,7 +147,7 @@ function TopBar({
     } catch (error) {}
   };
   const redoMessage = async () => {
-    console.log("here");
+    ("here");
     try {
       if (game) {
         game.redoLastShape();

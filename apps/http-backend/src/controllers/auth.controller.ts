@@ -172,25 +172,28 @@ export const googleStart = (_req: Request, res: Response) => {
 
 export const googleCallback = async (req: Request, res: Response) => {
   try {
-    console.log("CODE", req.query.code);
-    console.log("STATE", req.query.state);
-    console.log("OAuth State", req.cookies.google_oauth_state);
     if (!req.query.code || req.query.state !== req.cookies.google_oauth_state) {
       return res.redirect(`${frontendUrl}/signin?error=google_auth`);
     }
+
     const { tokens } = await googleClient.getToken(String(req.query.code));
+
     if (!tokens.id_token) throw new Error("Google did not return an ID token");
+
     const ticket = await googleClient.verifyIdToken({
       idToken: tokens.id_token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
+
     const payload = ticket.getPayload();
+
     if (!payload?.sub || !payload.email)
       throw new Error("Google profile is incomplete");
 
     const existingUser = await prisma.user.findUnique({
       where: { email: payload.email },
     });
+    
     const user = existingUser
       ? await prisma.user.update({
           where: { id: existingUser.id },

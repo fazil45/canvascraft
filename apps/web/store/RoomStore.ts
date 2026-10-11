@@ -43,8 +43,6 @@ export const RoomStore = create<RoomStoreState>((set) => ({
         },
       );
 
-      console.log("ROOM RESPONSE:", response.data);
-
       if (response.data.success) {
         new Promise((resolve) =>
           resolve(set({ roomsCreated: response.data.rooms })),

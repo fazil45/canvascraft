@@ -15,7 +15,6 @@ export default function RoomCanvas({ roomId }: { roomId: number }) {
       `${process.env.NEXT_PUBLIC_WS_BACKEND_URL}?token=${token}`,
     );
 
-    console.log(ws);
     ws.onopen = () => {
       setSocket(ws);
       ws.send(

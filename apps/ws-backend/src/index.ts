@@ -18,7 +18,6 @@ const users: User[] = [];
 
 function checkUser(token: string): string | null {
   try {
-    console.log(token)
     const decoded = jwt.verify(token, SECRET_TOKEN!);
     if (typeof decoded === "string") {
       return null;
@@ -92,7 +91,6 @@ wss.on("connection", function connection(ws, request) {
     }
 
     if (parsedData.type === "join_room") {
-      console.log("here")
       const user = users.find((x) => x.ws === ws);
 
       if (!user) return;
@@ -122,8 +120,6 @@ wss.on("connection", function connection(ws, request) {
       const roomUsers = users
         .filter((user) => user.rooms.includes(roomId) && user.ws !== ws)
         .map((user) => ({ userId: user.userId, username: user.username }));
-
-      console.log(roomUsers);
 
       // Telling new user who is already present in room
       ws.send(
@@ -166,14 +162,11 @@ wss.on("connection", function connection(ws, request) {
       const roomId = Number(parsedData.roomId);
       const message = parsedData.message;
       const clientId = parsedData.clientId;
-      console.log(message)
 
       try {
         const createChat = await prisma.chat.create({
           data: { roomId: Number(roomId), message, userId },
         });
-
-        console.log(createChat)
 
         const parsedMessage = JSON.parse(message);
         const tempId = parsedMessage.shape.id;

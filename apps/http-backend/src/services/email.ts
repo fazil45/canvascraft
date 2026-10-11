@@ -71,5 +71,4 @@ export const sendEmail = async (email: string, token: string) => {
     return console.error({ error });
   }
 
-  console.log({ data });
 };

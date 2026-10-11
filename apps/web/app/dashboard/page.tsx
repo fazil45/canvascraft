@@ -55,7 +55,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchRoom();
-    console.log(roomsCreated);
   }, []);
 
   const createForm = useForm({
